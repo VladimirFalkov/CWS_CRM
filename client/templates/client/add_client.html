@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+
+{% block title %}New Client{% endblock  %}
+
+{% block content %}
+<div class="py-6 px-6">
+  <h1 class="text-xl">Add new client</h1>
+  Num clients now : {{ team.clients.count }} <br>
+  Your plan {{ team.plan.max_clients }}
+  {% if team.plan.max_clients > team.clients.count %}
+  
+    <form method='post' action=".">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="py-4 px-8 text-white bg-teal-500 rounded-xl">Submit</button>
+    </form>
+  {% else %}
+
+    <p class="mt-6 px-6 py-4 bg-red-400 rounded-xl text-white">
+      Your team have reached maximum number of clients! Upgrade your plan!</p>
+    
+  {% endif %}
+</div>
+  
+{% endblock content %} 

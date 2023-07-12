@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+
+{% block title %}New Lead{% endblock  %}
+
+{% block content %}
+<div class="py-6 px-6">
+  <h1 class="text-xl">Add new lead</h1>
+  Num leads now : {{ team.leads.count }} <br>
+  Your plan {{ team.plan.max_leads }}
+  {% if team.plan.max_leads > team.leads.count %}
+  
+    <form method='post' action=".">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="py-4 px-8 text-white bg-teal-500 rounded-xl">Submit</button>
+    </form>
+
+  {% else %}
+
+    <p class="mt-6 px-6 py-4 bg-red-400 rounded-xl text-white">
+      You have reached your limit! Upgrade your plan</p>
+
+  {% endif %}
+</div>
+  
+{% endblock content %} 
