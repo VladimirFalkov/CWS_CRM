@@ -41,7 +41,7 @@ def add_client(request):
 
             messages.success(request, 'The client was created')
 
-            return redirect('clients_list')
+            return redirect('clients:list')
     else:
         form = AddClientForm()
     return render(request, 'client/add_client.html', {
@@ -57,7 +57,7 @@ def clients_delete(request, pk):
 
     messages.success(request, 'The client was deleted')
 
-    return redirect('clients_list')
+    return redirect('clients:list')
 
 
 @login_required
@@ -72,7 +72,7 @@ def clients_edit(request, pk):
 
             messages.success(request, 'The client was updated')
         
-        return redirect('clients_list')
+        return redirect('clients:list')
     else:
         form = AddClientForm(instance=client)
 

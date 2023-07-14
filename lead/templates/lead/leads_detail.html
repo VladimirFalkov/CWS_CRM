@@ -19,11 +19,11 @@
     <p class="font-semibold">Modified_at</p>
     <p class="mb-6">{{lead.modified_at|date:"d-M-Y H:i" }}</p>
     <hr class="my-4">
-    <a href="{% url 'leads_convert' lead.id %}" class="py-2 px-4 bg-blue-500 rounded-xl text-white">Convert to Client</a>
-    <a href="{% url 'leads_edit' lead.id %}" class="py-2 px-4 bg-teal-500 rounded-xl text-white">Edit</a>
-    <a href="{% url 'leads_delete' lead.id %}" class="py-2 px-4 bg-red-500 rounded-xl text-white">Delete</a>
+    <a href="{% url 'leads:convert' lead.id %}" class="py-2 px-4 bg-blue-500 rounded-xl text-white">Convert to Client</a>
+    <a href="{% url 'leads:edit' lead.id %}" class="py-2 px-4 bg-teal-500 rounded-xl text-white">Edit</a>
+    <a href="{% url 'leads:delete' lead.id %}" class="py-2 px-4 bg-red-500 rounded-xl text-white">Delete</a>
     <hr class="my-4">
-    <a href="{% url 'list_leads' %}" class="hover:text-gray-700">Back</a>    
+    <a href="{% url 'leads:list' %}" class="hover:text-gray-700">Back</a>    
   
     
 </div>
