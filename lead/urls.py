@@ -14,8 +14,9 @@ urlpatterns = [
     #path('<int:pk>/edit/', views.leads_edit, name='edit'),
     #path('<int:pk>/convert/', views.convert_to_client, name='convert'),
     path('<int:pk>/convert/', views.ConvertToClientView.as_view(), name='convert'),
-
-    path('add/', views.LeadCreateView.as_view (), name='add'),
+    path('<int:pk>/add-comment/', views.AddCommentView.as_view(), name='add_comment'),
+    path('<int:pk>/add-file/', views.AddFileView.as_view(), name='add_file'),
+    path('add/', views.LeadCreateView.as_view(), name='add'),
     #path('add-lead/', views.add_lead, name='add'),
     
 ]

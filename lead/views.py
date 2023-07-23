@@ -8,10 +8,11 @@ from django.views import View
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 
-from .forms import AddLeadForm
-from .models import Lead
-from client.models import Client
+from .forms import AddCommentForm, AddFileForm
+from .models import Lead, Comment
+from client.models import Client, Comment as ClientComment
 from team.models import Team
+
 
 
 class LeadListView(ListView):
@@ -124,6 +125,13 @@ class LeadDetailView(DetailView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = AddCommentForm()
+        context['fileform'] = AddFileForm()
+
+        return context
 
     def get_queryset(self):
         queryset = super(LeadDetailView, self).get_queryset()
@@ -195,24 +203,68 @@ class ConvertToClientView(View):
         lead.converted_to_client = True
         lead.save()
 
+        # Convert lead`s comments to client`s comments
+        comments = Comment.objects.all()
+
+        for comment in comments:
+            ClientComment.objects.create(
+                content = comment.content,
+                client = client,
+                created_by = comment.created_by,
+                tem = team
+
+            )
+        # Show message and redirect
+
+
         messages.success(request, 'The lead was converted to a client.')
         
         return redirect('leads:list')
     
-def convert_to_client(request, pk):
-    lead = get_object_or_404(Lead, pk=pk, created_by=request.user)
-    team = Team.objects.filter(created_by=request.user)[0]
+#def convert_to_client(request, pk):
+    #lead = get_object_or_404(Lead, pk=pk, created_by=request.user)
+    #team = Team.objects.filter(created_by=request.user)[0]
 
 
-    client = Client.objects.create(
-        name=lead.name,
-        email=lead.email,
-        description=lead.description,
-        created_by=request.user,
-        team = team,
-    )
-    lead.converted_to_client = True
-    lead.save()
-    messages.success(request, 'The lead was converted to a client.')
+    #client = Client.objects.create(
+        #name=lead.name,
+        #email=lead.email,
+        #description=lead.description,
+        #created_by=request.user,
+        #team = team,
+    #)
+    #lead.converted_to_client = True
+    #lead.save()
+    #messages.success(request, 'The lead was converted to a client.')
 
-    return redirect('leads:list')
+    #return redirect('leads:list')
+
+class AddFileView(View):
+    def post(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        form = AddFileForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            team = Team.objects.filter(created_by=request.user)[0]
+            file = form.save(commit=False)
+            file.team = team
+            file.lead_id = pk
+            file.created_by = request.user 
+            file.save()
+            
+        return redirect('leads:detail', pk=pk)
+
+class AddCommentView(View):
+    def post(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        form = AddCommentForm(request.POST)
+        
+        if form.is_valid():
+            team = Team.objects.filter(created_by=request.user)[0]
+            comment = form.save(commit=False)
+            comment.team = team
+            comment.created_by = request.user
+            comment.lead_id = pk
+            comment.save()
+
+        return redirect('leads:detail', pk=pk)
