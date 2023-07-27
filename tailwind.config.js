@@ -3,6 +3,7 @@ module.exports = {
   content: [
     'client/templates/client/*.html',
     'core/templates/core/*.html',
+    'core/templates/core/partials/*.html',
     'team/templates/team/*.html',
     'lead/templates/lead/*.html',
     'dashboard/templates/dashboard/*.html',
