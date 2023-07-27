@@ -65,12 +65,10 @@ class LeadCreateView(LoginRequiredMixin,CreateView):
     fields = ('name', 'email', 'description', 'priority', 'status',)
     success_url = reverse_lazy('leads:list')
 
-
-    
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        team = Team.objects.filter(created_by=self.request.user)[0]
+        team = self.request.user.userprofile.active_team
         context['team'] = team
         context['title'] = 'Add new lead'
 
@@ -78,11 +76,10 @@ class LeadCreateView(LoginRequiredMixin,CreateView):
 
     
     def form_valid(self, form):
-        team = Team.objects.filter(created_by=self.request.user)[0]
 
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
-        self.object.team = team
+        self.object.team = self.request.user.userprofile.active_team
         self.object.save()
         
         return redirect(self.get_success_url())
@@ -182,13 +179,12 @@ class ConvertToClientView(LoginRequiredMixin, View):
      def get(self, request, *args, **kwargs):
         pk = self.kwargs.get('pk')
         lead = get_object_or_404(Lead, pk=pk, created_by=request.user)
-        team = Team.objects.filter(created_by=request.user)[0]
         client = Client.objects.create(
             name=lead.name,
             email=lead.email,
             description=lead.description,
             created_by=request.user,
-            team = team,
+            team = self.request.user.userprofile.active_team,
         )
         lead.converted_to_client = True
         lead.save()
@@ -201,7 +197,7 @@ class ConvertToClientView(LoginRequiredMixin, View):
                 content = comment.content,
                 client = client,
                 created_by = comment.created_by,
-                tem = team
+                team = self.request.user.userprofile.active_team
 
             )
         # Show message and redirect
@@ -235,7 +231,7 @@ class AddFileView(View):
         form = AddFileForm(request.POST, request.FILES)
 
         if form.is_valid():
-            team = Team.objects.filter(created_by=request.user)[0]
+            team = self.request.user.userprofile.active_team
             file = form.save(commit=False)
             file.team = team
             file.lead_id = pk
@@ -250,7 +246,7 @@ class AddCommentView(View):
         form = AddCommentForm(request.POST)
         
         if form.is_valid():
-            team = Team.objects.filter(created_by=request.user)[0]
+            team = self.request.user.userprofile.active_team
             comment = form.save(commit=False)
             comment.team = team
             comment.created_by = request.user
